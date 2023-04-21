@@ -1,16 +1,51 @@
 #include "GameScene.h"
 #include "TextureManager.h"
+#include"MathUtilityForText.h"
 #include <cassert>
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() 
+{
+	//背景
+	delete spriteBG_;
+	//ステージ
+	delete modelStage_;
+
+}
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	//背景
+	textureHamdleBG_ = TextureManager::Load("bg.jpg");
+	spriteBG_ = Sprite::Create(textureHamdleBG_, {0, 0});
+
+	//ステージ
+	viewProjection_.Initialize();
+
+	textureHandleStage_ = TextureManager::Load("stage.jpg");
+	modelStage_ = Model::Create();
+	worldTransformStage_.Initialize();
+
+	//視点変更
+	viewProjection_.translation_.y = 1;
+	viewProjection_.translation_.z = -6;
+	viewProjection_.Initialize();
+
+	//ステージ位置変更
+	worldTransformStage_.translation_ = {0, -1.5f, 0};
+	worldTransformStage_.scale_ = {4.5f, 1, 40};
+
+	worldTransformStage_.matWorld_ = MakeAffineMatrix(
+	    worldTransformStage_.scale_, 
+		worldTransformStage_.rotation_,
+	    worldTransformStage_.translation_);
+
+	worldTransformStage_.TransferMatrix();
+
 }
 
 void GameScene::Update() {}
@@ -18,7 +53,11 @@ void GameScene::Update() {}
 void GameScene::Draw() {
 
 	// コマンドリストの取得
+	//背景
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+
+	
+
 
 #pragma region 背景スプライト描画
 	// 背景スプライト描画前処理
@@ -27,6 +66,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	
+	spriteBG_->Draw();
+	
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -41,6 +83,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	// ステージ
+	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
