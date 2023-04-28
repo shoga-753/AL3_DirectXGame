@@ -46,6 +46,10 @@ public: // メンバ関数
 	    void playerUpdate();
 	    void beamMove();
 	    void beamBorn();
+
+	    void enemyUpdate();
+	    void enemyMove();
+	    void enemyBorn();
 	    
 
 private: // メンバ変数
@@ -78,6 +82,11 @@ private: // メンバ変数
 	uint32_t textureHandlePlayer_ = 0;
 	Model* modelPlayer_ = nullptr;
 	WorldTransform worldTransformPlayer_;
+	//敵機
+	uint32_t textureHandleEnemy_ = 0;
+	Model* modelEnemy_ = nullptr;
+	WorldTransform worldTransformEnemy_;
+	bool enemyFrag_ = false;
 
 	
 };
