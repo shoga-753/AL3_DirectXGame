@@ -72,6 +72,9 @@ void GameScene::Initialize() {
 
 	srand((unsigned int)time(NULL));
 
+	debugText_ = DebugText::GetInstance();
+	debugText_->Initialize();
+
 }
 
 void GameScene::Update() 
@@ -79,6 +82,10 @@ void GameScene::Update()
 	playerUpdate();
 	beamUpdate();
 	enemyUpdate();
+	collision();
+	collisionPlayerEnemy();
+	collisionBeamEnemy();
+
 }
 
 void GameScene::Draw() {
@@ -141,6 +148,16 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+	//debugText_->Print("AAA", 10, 10, 2);
+	
+
+	char str[100];
+	sprintf_s(str, "SCORE %d", gameScore_);
+	debugText_->Print(str, 200, 10, 2);
+
+	sprintf_s(str, "LIFE %d", playerLife_);
+	debugText_->Print(str, 10, 10, 2);
+	debugText_->DrawAll();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -241,6 +258,40 @@ void GameScene::enemyBorn()
 		float x2 = (float)x / 10 - 4;
 		worldTransformEnemy_.translation_.x = x2;
     }
+}
+
+void GameScene::collision() 
+{
+	collisionPlayerEnemy();
+	collisionBeamEnemy();
+}
+
+void GameScene::collisionPlayerEnemy() 
+{
+	if (enemyFrag_==true)
+	{
+		float dx = abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_.translation_.x);
+		float dz = abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_.translation_.z);
+
+		if (dx < 1 && dz < 1)
+		{
+			enemyFrag_ = 0;
+			playerLife_ -= 1;
+		}
+	}
+}
+
+void GameScene::collisionBeamEnemy() 
+{
+	if (enemyFrag_ == true&&beamFrag_==true) {
+		float dx = abs(worldTransformBeam_.translation_.x - worldTransformEnemy_.translation_.x);
+		float dz = abs(worldTransformBeam_.translation_.z - worldTransformEnemy_.translation_.z);
+
+		if (dx < 1 && dz < 1) {
+			enemyFrag_ = false;
+			beamFrag_ = false;
+		}
+	}
 }
 
 void GameScene::beamUpdate() 
