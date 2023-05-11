@@ -79,12 +79,13 @@ void GameScene::Initialize() {
 
 void GameScene::Update() 
 { 
-	playerUpdate();
-	beamUpdate();
-	enemyUpdate();
-	collision();
-	collisionPlayerEnemy();
-	collisionBeamEnemy();
+	switch (sceneMode_) 
+	{
+	case 0://ゲームプレイ
+		GamePlayUpdate();
+		break;
+	}
+	
 
 }
 
@@ -104,8 +105,13 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	switch (sceneMode_) 
+	{
+	case 0: // ゲームプレイ
+		GamePlayDraw2DBack(); 
+		break;
+	}
 	
-	spriteBG_->Draw();
 	
 
 	// スプライト描画後処理
@@ -121,22 +127,14 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	// ステージ
-	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
-
-	//自機表示
-	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer_);
-
-	// ビーム
-	if (beamFrag_ == true) 
+	switch(sceneMode_) 
 	{
-		modelBeam_->Draw(worldTransformBeam_, viewProjection_, textureHandleBeam_);
+	case 0: // ゲームプレイ
+		GamePlayDraw3D();
+		break;
 	}
-	//敵機表示
-	if (enemyFrag_==true) 
-	{
-		modelEnemy_->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
-	}
+	
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -149,8 +147,56 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	//debugText_->Print("AAA", 10, 10, 2);
+	switch (sceneMode_) 
+	{
+	case 0: // ゲームプレイ
+		GamePlayDraw2DNear(); 
+		break;
+	}
+	
 	
 
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+#pragma endregion
+}
+
+void GameScene::GamePlayUpdate() 
+{
+	playerUpdate();
+	beamUpdate();
+	enemyUpdate();
+	collision();
+	collisionPlayerEnemy();
+	collisionBeamEnemy();
+}
+
+void GameScene::GamePlayDraw3D() 
+{
+	// ステージ
+	modelStage_->Draw(worldTransformStage_, viewProjection_, textureHandleStage_);
+
+	// 自機表示
+	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer_);
+
+	// ビーム
+	if (beamFrag_ == true) {
+		modelBeam_->Draw(worldTransformBeam_, viewProjection_, textureHandleBeam_);
+	}
+	// 敵機表示
+	if (enemyFrag_ == true) {
+		modelEnemy_->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
+	}
+}
+
+void GameScene::GamePlayDraw2DBack() 
+{ 
+	spriteBG_->Draw(); 
+}
+
+void GameScene::GamePlayDraw2DNear() 
+{
 	char str[100];
 	sprintf_s(str, "SCORE %d", gameScore_);
 	debugText_->Print(str, 200, 10, 2);
@@ -158,11 +204,6 @@ void GameScene::Draw() {
 	sprintf_s(str, "LIFE %d", playerLife_);
 	debugText_->Print(str, 10, 10, 2);
 	debugText_->DrawAll();
-
-	// スプライト描画後処理
-	Sprite::PostDraw();
-
-#pragma endregion
 }
 
 void GameScene::playerUpdate() 

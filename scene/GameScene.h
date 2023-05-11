@@ -42,6 +42,14 @@ public: // メンバ関数
 	void Draw();
 
 	private:
+
+		void GamePlayUpdate();
+	    void GamePlayDraw3D();
+	    void GamePlayDraw2DBack();
+	    void GamePlayDraw2DNear();
+
+
+	private:
 		//自機更新
 	    void beamUpdate();
 	    void playerUpdate();
@@ -97,5 +105,6 @@ private: // メンバ変数
 	int gameScore_ = 0;
 	int playerLife_ = 3;
 
+	int sceneMode_ = 0;
 
 };
