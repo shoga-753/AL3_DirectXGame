@@ -4,16 +4,25 @@
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() { delete stage_; }
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+
+	stage_ = new Stage();
+	stage_->Initialize(viewProjection_);
+
+
 }
 
-void GameScene::Update() {}
+void GameScene::Update() 
+{ 
+	stage_->Update(); 
+}
 
 void GameScene::Draw() {
 
@@ -27,6 +36,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
+	stage_->Draw2DFar();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -41,6 +51,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	stage_->Draw3D();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
