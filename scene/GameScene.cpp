@@ -8,6 +8,12 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() 
 {
+	//タイトル
+	delete spriteTitle_;
+	// タイトル(エンター)
+	delete spriteEnter_;
+	//ゲームオーバー
+	delete spriteGameOver_;
 	//背景
 	delete spriteBG_;
 	//ステージ
@@ -26,6 +32,18 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	//タイトル(2Dスプライト)
+	textureHandleTitle_ = TextureManager::Load("title.png");
+	spriteTitle_ = Sprite::Create(textureHandleTitle_, {0, 0});
+
+	// タイトルエンター(2Dスプライト)
+	textureHandleEnter_ = TextureManager::Load("enter.png");
+	spriteEnter_ = Sprite::Create(textureHandleEnter_, {420, 420});
+
+	// ゲームオーバー
+	textureHandleGameOver_ = TextureManager::Load("gameover.png");
+	spriteGameOver_ = Sprite::Create(textureHandleGameOver_, {0, 0});
+
 	//背景
 	textureHamdleBG_ = TextureManager::Load("bg.jpg");
 	spriteBG_ = Sprite::Create(textureHamdleBG_, {0, 0});
@@ -83,6 +101,13 @@ void GameScene::Update()
 	{
 	case 0://ゲームプレイ
 		GamePlayUpdate();
+		
+		break;
+	case 1:
+		TitleUpdate();
+		break;
+	case 2:
+		GameOverUpdate();
 		break;
 	}
 	
@@ -110,6 +135,9 @@ void GameScene::Draw() {
 	case 0: // ゲームプレイ
 		GamePlayDraw2DBack(); 
 		break;
+	case 2:
+		GamePlayDraw2DBack();
+		break;
 	}
 	
 	
@@ -132,6 +160,9 @@ void GameScene::Draw() {
 	case 0: // ゲームプレイ
 		GamePlayDraw3D();
 		break;
+	case 2:
+		GamePlayDraw3D();
+		break;
 	}
 	
 
@@ -152,6 +183,12 @@ void GameScene::Draw() {
 	case 0: // ゲームプレイ
 		GamePlayDraw2DNear(); 
 		break;
+	case 1:
+		TitleDraw2DNear();
+		break;
+	case 2:
+		GameOverDraw2DNear();
+		break;
 	}
 	
 	
@@ -164,6 +201,14 @@ void GameScene::Draw() {
 
 void GameScene::GamePlayUpdate() 
 {
+	if (playerLife_<=0)
+	{
+		sceneMode_ = 2;
+
+		playerLife_ = 3;
+		
+	}
+
 	playerUpdate();
 	beamUpdate();
 	enemyUpdate();
@@ -204,6 +249,48 @@ void GameScene::GamePlayDraw2DNear()
 	sprintf_s(str, "LIFE %d", playerLife_);
 	debugText_->Print(str, 10, 10, 2);
 	debugText_->DrawAll();
+}
+
+void GameScene::TitleUpdate() 
+{ 
+	if (input_->TriggerKey(DIK_RETURN))
+	{
+		sceneMode_ = 0;
+	}
+	
+	gameTimer_++; 
+}
+
+void GameScene::TitleDraw2DNear() 
+{
+	//タイトル表示
+	spriteTitle_->Draw();
+
+	//エンター表示
+	if (gameTimer_ % 40 >= 20)
+	{
+		spriteEnter_->Draw();
+	}
+	
+}
+
+void GameScene::GameOverUpdate() 
+{
+	if (input_->TriggerKey(DIK_RETURN)) {
+		sceneMode_ = 1;
+	}
+
+	gameTimer_++;
+}
+
+void GameScene::GameOverDraw2DNear() {
+	spriteGameOver_->Draw();
+
+	// エンター表示
+	if (gameTimer_ % 40 >= 20) {
+		spriteEnter_->Draw();
+	}
+
 }
 
 void GameScene::playerUpdate() 
@@ -331,6 +418,7 @@ void GameScene::collisionBeamEnemy()
 		if (dx < 1 && dz < 1) {
 			enemyFrag_ = false;
 			beamFrag_ = false;
+			gameScore_ += 10;
 		}
 	}
 }

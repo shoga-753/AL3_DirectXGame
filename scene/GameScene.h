@@ -48,7 +48,11 @@ public: // メンバ関数
 	    void GamePlayDraw2DBack();
 	    void GamePlayDraw2DNear();
 
+		void TitleUpdate();
+	    void TitleDraw2DNear();
 
+		void GameOverUpdate();
+		void GameOverDraw2DNear();
 	private:
 		//自機更新
 	    void beamUpdate();
@@ -63,6 +67,8 @@ public: // メンバ関数
 		void collision();
 	    void collisionPlayerEnemy();
 	    void collisionBeamEnemy();
+
+		void gamePlayStart();
 	    
 
 private: // メンバ変数
@@ -73,6 +79,18 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	//タイトル
+	uint32_t textureHandleTitle_ = 0;
+	Sprite* spriteTitle_ = nullptr;
+
+	//タイトル(エンター)
+	uint32_t textureHandleEnter_ = 0;
+	Sprite* spriteEnter_ = nullptr;
+
+	// ゲームオーバー
+	uint32_t textureHandleGameOver_ = 0;
+	Sprite* spriteGameOver_ = nullptr;
+	
 	//背景
 	uint32_t textureHamdleBG_ = 0;
 	Sprite* spriteBG_ = nullptr;
@@ -105,6 +123,8 @@ private: // メンバ変数
 	int gameScore_ = 0;
 	int playerLife_ = 3;
 
-	int sceneMode_ = 0;
+	int sceneMode_ = 1;
+
+	int gameTimer_ = 0;
 
 };
