@@ -10,6 +10,10 @@
 #include "WorldTransform.h"
 
 #include"Stage.h"
+#include"Player.h"
+#include"Beam.h"
+#include"Enemy.h"
+#include"DebugText.h"
 
 /// <summary>
 /// ゲームシーン
@@ -42,6 +46,9 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void CollisionPlayerEnemy();
+	void CollisionBeamEnemy();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -55,4 +62,16 @@ private: // メンバ変数
 	Stage* stage_ = nullptr;
 
 	ViewProjection viewProjection_;
+
+	Player* player_ = nullptr;
+
+	Beam* beam_ = nullptr;
+
+	Enemy* enemy_ = nullptr;
+
+	DebugText* debugText_ = nullptr;
+
+	int gameScore = 0;
+
+	int playerLife = 3;
 };

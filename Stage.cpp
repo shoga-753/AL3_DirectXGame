@@ -21,10 +21,6 @@ void Stage::Initialize(ViewProjection view)
 	modelStage_ = Model::Create();
 	worldTransformStage_.Initialize();
 
-	viewProjection_.translation_.y = 1;
-	viewProjection_.translation_.z = -6;
-	viewProjection_.Initialize();
-
 	worldTransformStage_.translation_ = {0, -1.5f, 0};
 	worldTransformStage_.scale_ = {4.5f, 1, 40};
 

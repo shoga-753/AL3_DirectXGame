@@ -109,8 +109,11 @@
     <ClCompile Include="2d\ImGuiManager.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="Beam.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtilityForText.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Stage.cpp" />
   </ItemGroup>
@@ -137,12 +140,15 @@
     <ClInclude Include="base\SafeDelete.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="Beam.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="MathUtilityForText.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Stage.h" />
   </ItemGroup>
