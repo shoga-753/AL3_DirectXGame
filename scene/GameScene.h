@@ -11,6 +11,7 @@
 
 
 #include"Gameplay.h"
+#include"Title.h"
 
 /// <summary>
 /// ゲームシーン
@@ -56,6 +57,7 @@ private: // メンバ変数
 	
 	//
 	Gameplay* gameplay_ = nullptr;
+	Title* title_ = nullptr;
 	//ステージ
 
 	ViewProjection viewProjection_;

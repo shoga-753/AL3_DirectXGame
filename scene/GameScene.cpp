@@ -17,6 +17,9 @@ void GameScene::Initialize() {
 
 	gameplay_ = new Gameplay();
 	gameplay_->Initialize(viewProjection_);
+
+	title_ = new Title();
+	title_->Initialize();
 }
 
 void GameScene::Update() 
@@ -26,7 +29,11 @@ void GameScene::Update()
 case 0:
 		gameplay_->Update();
 		break;
+case 1:
+		title_->Update();
+		break;
 	}
+
 
 	
 }
@@ -49,6 +56,9 @@ void GameScene::Draw() {
 	{
 	case 0:
 		gameplay_->Draw2DFar();
+		break;
+	case 1:
+		title_->Draw2DNear();
 		break;
 	}
 
