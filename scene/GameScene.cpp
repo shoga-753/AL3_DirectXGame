@@ -105,6 +105,7 @@ void GameScene::Update()
 		break;
 	case 1:
 		TitleUpdate();
+		gamePlayStart();
 		break;
 	case 2:
 		GameOverUpdate();
@@ -201,6 +202,7 @@ void GameScene::Draw() {
 
 void GameScene::GamePlayUpdate() 
 {
+	
 	if (playerLife_<=0)
 	{
 		sceneMode_ = 2;
@@ -421,6 +423,17 @@ void GameScene::collisionBeamEnemy()
 			gameScore_ += 10;
 		}
 	}
+}
+
+void GameScene::gamePlayStart() 
+{
+	GamePlayUpdate();
+	worldTransformPlayer_.translation_.x = 0;
+	worldTransformEnemy_.translation_.x = 0;
+	worldTransformBeam_.translation_.x = 0;
+	worldTransformBeam_.translation_.z = 0;
+	gameScore_ = 0;
+	
 }
 
 void GameScene::beamUpdate() 
