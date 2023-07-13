@@ -79,14 +79,22 @@ void GameScene::Initialize() {
 	//ビーム
 	textureHandleBeam_ = TextureManager::Load("beam.png");
 	modelBeam_ = Model::Create();
-	worldTransformBeam_.scale_ = {0.3f, 0.3f, 0.3f};
-	worldTransformBeam_.Initialize();
+	for (int  i = 0; i < 10; i++) 
+	{
+		worldTransformBeam_[i].scale_ = {0.3f, 0.3f, 0.3f};
+		worldTransformBeam_[i].Initialize();
+	}
+	
 
 	// 敵機表示
 	textureHandleEnemy_ = TextureManager::Load("enemy.png");
 	modelEnemy_ = Model::Create();
-	worldTransformEnemy_.scale_ = {0.5f, 0.5f, 0.5f};
-	worldTransformEnemy_.Initialize();
+	for (int i = 0; i < 10; i++) 
+	{
+		worldTransformEnemy_[i].scale_ = {0.5f, 0.5f, 0.5f};
+		worldTransformEnemy_[i].Initialize();
+	}
+	
 
 	srand((unsigned int)time(NULL));
 
@@ -205,9 +213,10 @@ void GameScene::GamePlayUpdate()
 	
 	if (playerLife_<=0)
 	{
-		sceneMode_ = 2;
-
-		playerLife_ = 3;
+		if (sceneMode_ != 1)
+		{
+			sceneMode_ = 2;
+		}
 		
 	}
 
@@ -228,13 +237,21 @@ void GameScene::GamePlayDraw3D()
 	modelPlayer_->Draw(worldTransformPlayer_, viewProjection_, textureHandlePlayer_);
 
 	// ビーム
-	if (beamFrag_ == true) {
-		modelBeam_->Draw(worldTransformBeam_, viewProjection_, textureHandleBeam_);
+	for (int i = 0; i < 10; i++) 
+	{
+		if (beamFrag_[i] == true) {
+			modelBeam_->Draw(worldTransformBeam_[i], viewProjection_, textureHandleBeam_);
+		}
 	}
+	
 	// 敵機表示
-	if (enemyFrag_ == true) {
-		modelEnemy_->Draw(worldTransformEnemy_, viewProjection_, textureHandleEnemy_);
+	for (int i = 0; i < 10; i++) 
+	{
+		if (enemyFrag_[i] == true) {
+			modelEnemy_->Draw(worldTransformEnemy_[i], viewProjection_, textureHandleEnemy_);
+		}
 	}
+	
 }
 
 void GameScene::GamePlayDraw2DBack() 
@@ -261,6 +278,7 @@ void GameScene::TitleUpdate()
 	}
 	
 	gameTimer_++; 
+	
 }
 
 void GameScene::TitleDraw2DNear() 
@@ -322,72 +340,113 @@ void GameScene::playerUpdate()
 
 void GameScene::beamMove() 
 { 
-	if (beamFrag_ == true) 
+	for (int i = 0; i < 10; i++) 
 	{
-		worldTransformBeam_.rotation_.x += 0.1f;
+		if (beamFrag_[i] == true) {
+			worldTransformBeam_[i].rotation_.x += 0.1f;
 
-		worldTransformBeam_.translation_.z += 0.1f;
+			worldTransformBeam_[i].translation_.z += 0.1f;
 
-		//画面外
-		if (worldTransformBeam_.translation_.z >= 40.f)
-		{
-			beamFrag_ = false;
+			// 画面外
+			if (worldTransformBeam_[i].translation_.z >= 40.f) {
+				beamFrag_[i] = false;
+			}
 		}
-			
 	}
+	
 }
 
-void GameScene::beamBorn() 
-{
-	if (input_->TriggerKey(DIK_SPACE)&&beamFrag_==false) 
-	{
+void GameScene::beamBorn() {
+	if (beamTimer_ == 0) {
+		for (int i = 0; i < 10; i++) {
+			if (input_->TriggerKey(DIK_SPACE) && beamFrag_[i] == false) {
 
-		worldTransformBeam_.translation_.x = worldTransformPlayer_.translation_.x;
-		worldTransformBeam_.translation_.z = worldTransformPlayer_.translation_.z;
+				worldTransformBeam_[i].translation_.x = worldTransformPlayer_.translation_.x;
+				worldTransformBeam_[i].translation_.z = worldTransformPlayer_.translation_.z;
 
-		beamFrag_ = true;
+				beamFrag_[i] = true;
+			}
+			if (rand() % 2 == 0) {
+				enemySpeed_[i];
+			}
+		}
+	} else {
+		beamTimer_++;
+		if (beamTimer_ > 10) {
+			beamTimer_ = 0;
+		}
 	}
 }
-
 void GameScene::enemyUpdate() 
 {
 	enemyMove();
 	enemyBorn();
+	for (int i = 0; i < 10; i++) 
+	{
+		worldTransformEnemy_[i].matWorld_ = MakeAffineMatrix(
+		    worldTransformEnemy_[i].scale_, worldTransformEnemy_[i].rotation_,
+		    worldTransformEnemy_[i].translation_);
 
-	worldTransformEnemy_.matWorld_ = MakeAffineMatrix(
-	    worldTransformEnemy_.scale_, worldTransformEnemy_.rotation_,
-	    worldTransformEnemy_.translation_);
-
-	worldTransformEnemy_.TransferMatrix();
+		worldTransformEnemy_[i].TransferMatrix();
+	}
+	
 }
 
 void GameScene::enemyMove() 
 { 
-	if (enemyFrag_ == true) 
+	for (int i = 0; i < 10; i++) 
 	{
+		if (enemyFrag_[i] == true) {
 
-		worldTransformEnemy_.rotation_.x -= 0.1f;
+			worldTransformEnemy_[i].rotation_.x -= 0.1f;
 
-		worldTransformEnemy_.translation_.z -= 0.3f;
+			worldTransformEnemy_[i].translation_.x +=enemySpeed_[i] ;
+
+			if (worldTransformEnemy_[i].translation_.x >= 4) {
+				enemySpeed_[i] = -0.1f;
+			}
+			if (worldTransformEnemy_[i].translation_.x <= -4) {
+				enemySpeed_[i] = 0.1f;
+			}
+
+			worldTransformEnemy_[i].translation_.z -= 0.3f;
+		}
+		if (worldTransformEnemy_[i].translation_.z < -5.f) {
+			enemyFrag_[i] = false;
+		}
+
 	}
-	if (worldTransformEnemy_.translation_.z < -5.f)
-	{
-		enemyFrag_ = false;
-	}
+	
 	
 }
 
 void GameScene::enemyBorn() 
 {
-	if (enemyFrag_ == false)
+	if (rand() % 10 == 0) 
 	{
-		enemyFrag_ = true;
-		worldTransformEnemy_.translation_.z = 40.f;
+		for (int i = 0; i < 10; i++) {
+			if (enemyFrag_[i] == false) {
+				enemyFrag_[i] = true;
+				worldTransformEnemy_[i].translation_.z = 40.f;
 
-		int x = rand() % 80;
-		float x2 = (float)x / 10 - 4;
-		worldTransformEnemy_.translation_.x = x2;
-    }
+				if (rand() % 2 == 0) {
+					enemySpeed_[i] = 0.1f;
+				} else {
+					enemySpeed_[i] = -0.1f;
+				}
+
+				int x = rand() % 80;
+				float x2 = (float)x / 10 - 4;
+				worldTransformEnemy_[i].translation_.x = x2;
+				break;
+			}
+			
+		}
+		
+			
+		
+	}
+	
 }
 
 void GameScene::collision() 
@@ -398,52 +457,84 @@ void GameScene::collision()
 
 void GameScene::collisionPlayerEnemy() 
 {
-	if (enemyFrag_==true)
+	for (int  i = 0; i < 10; i++) 
 	{
-		float dx = abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_.translation_.x);
-		float dz = abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_.translation_.z);
+		if (enemyFrag_[i] == true) {
+			float dx =
+			    abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_[i].translation_.x);
+			float dz =
+			    abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_[i].translation_.z);
 
-		if (dx < 1 && dz < 1)
-		{
-			enemyFrag_ = 0;
-			playerLife_ -= 1;
+			if (dx < 1 && dz < 1) {
+				enemyFrag_[i] = 0;
+				playerLife_ -= 1;
+			}
 		}
 	}
+	
 }
 
 void GameScene::collisionBeamEnemy() 
 {
-	if (enemyFrag_ == true&&beamFrag_==true) {
-		float dx = abs(worldTransformBeam_.translation_.x - worldTransformEnemy_.translation_.x);
-		float dz = abs(worldTransformBeam_.translation_.z - worldTransformEnemy_.translation_.z);
+	for (int e = 0; e < 10; e++) 
+	{
+		if (enemyFrag_[e] == true) 
+		{
+			for (int i = 0; i < 10; i++) 
+			{
+				if (beamFrag_[i] == true) 
+				{
+					float dx =
+					    abs(worldTransformBeam_[i].translation_.x -
+					        worldTransformEnemy_[e].translation_.x);
+					float dz =
+					    abs(worldTransformBeam_[i].translation_.z -
+					        worldTransformEnemy_[e].translation_.z);
 
-		if (dx < 1 && dz < 1) {
-			enemyFrag_ = false;
-			beamFrag_ = false;
-			gameScore_ += 10;
-		}
+					if (dx < 1 && dz < 1) {
+						enemyFrag_[e] = false;
+						beamFrag_[i] = false;
+						gameScore_ += 10;
+					}
+				}
+			}
+			
+	}
+	
 	}
 }
 
 void GameScene::gamePlayStart() 
 {
-	GamePlayUpdate();
-	worldTransformPlayer_.translation_.x = 0;
-	worldTransformEnemy_.translation_.x = 0;
-	worldTransformBeam_.translation_.x = 0;
-	worldTransformBeam_.translation_.z = 0;
-	gameScore_ = 0;
 	
+	worldTransformPlayer_.translation_.x = 0;
+	for (int  i = 0; i < 10; i++) 
+	{
+	worldTransformEnemy_[i].translation_.x = 0;
+	worldTransformEnemy_[i].translation_.z = 0;
+	}
+	for (int i = 0; i < 10; i++) 
+	{
+	worldTransformBeam_[i].translation_.x = 0;
+	worldTransformBeam_[i].translation_.z = 0;
+	}
+	
+	gameScore_ = 0;
+	playerLife_ = 3;
+	GamePlayUpdate();
 }
 
 void GameScene::beamUpdate() 
 {
 	beamMove();
 	beamBorn();
+	for (int i = 0; i < 10; i++) 
+	{
+	worldTransformBeam_[i].matWorld_ = MakeAffineMatrix(
+		worldTransformBeam_[i].scale_, worldTransformBeam_[i].rotation_,
+		worldTransformBeam_[i].translation_);
 
-	worldTransformBeam_.matWorld_ = MakeAffineMatrix(
-	    worldTransformBeam_.scale_, worldTransformBeam_.rotation_,
-	    worldTransformBeam_.translation_);
-
-	worldTransformBeam_.TransferMatrix();
+	worldTransformBeam_[i].TransferMatrix();
+	}
+	
 }

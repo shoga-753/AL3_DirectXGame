@@ -106,8 +106,8 @@ private: // メンバ変数
 	// ビーム
 	uint32_t textureHandleBeam_ = 0;
 	Model* modelBeam_ = nullptr;
-	WorldTransform worldTransformBeam_;
-	bool beamFrag_ = false;
+	WorldTransform worldTransformBeam_[10];
+	bool beamFrag_[10] = {0};
 
 	//自機
 	uint32_t textureHandlePlayer_ = 0;
@@ -116,8 +116,8 @@ private: // メンバ変数
 	//敵機
 	uint32_t textureHandleEnemy_ = 0;
 	Model* modelEnemy_ = nullptr;
-	WorldTransform worldTransformEnemy_;
-	bool enemyFrag_ = false;
+	WorldTransform worldTransformEnemy_[10];
+	bool enemyFrag_[10] = {0};
 
 	DebugText* debugText_ = nullptr;
 	int gameScore_ = 0;
@@ -126,5 +126,9 @@ private: // メンバ変数
 	int sceneMode_ = 1;
 
 	int gameTimer_ = 0;
+
+	int beamTimer_ = 0;
+
+	float enemySpeed_[10] = {0};
 
 };
