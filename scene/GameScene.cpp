@@ -8,6 +8,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() 
 {
+
 	//タイトル
 	delete spriteTitle_;
 	// タイトル(エンター)
@@ -32,6 +33,15 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	// サウンドデータの読み込み
+	titleBGM_ = audio_->LoadWave("Audio/ring05.wav");
+	gamePlayBGM_ = audio_->LoadWave("Audio/ring08.wav");
+	gameoverBGM_ = audio_->LoadWave("Audio/ring09.wav");
+	enemyHitBGM_ = audio_->LoadWave("Audio/chord.wav");
+	playerHitBGM_ = audio_->LoadWave("Audio/tada.wav");
+
+	voiceHandleBGM_ = audio_->PlayWave(titleBGM_, true);
 	//タイトル(2Dスプライト)
 	textureHandleTitle_ = TextureManager::Load("title.png");
 	spriteTitle_ = Sprite::Create(textureHandleTitle_, {0, 0});
@@ -215,6 +225,8 @@ void GameScene::GamePlayUpdate()
 	{
 		if (sceneMode_ != 1)
 		{
+			audio_->StopWave(voiceHandleBGM_);
+			voiceHandleBGM_ = audio_->PlayWave(gameoverBGM_, true);
 			sceneMode_ = 2;
 		}
 		
@@ -274,7 +286,10 @@ void GameScene::TitleUpdate()
 { 
 	if (input_->TriggerKey(DIK_RETURN))
 	{
+		audio_->StopWave(voiceHandleBGM_);
+		voiceHandleBGM_ = audio_->PlayWave(gamePlayBGM_, true);
 		sceneMode_ = 0;
+
 	}
 	
 	gameTimer_++; 
@@ -296,7 +311,10 @@ void GameScene::TitleDraw2DNear()
 
 void GameScene::GameOverUpdate() 
 {
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_RETURN)) 
+	{
+		audio_->StopWave(voiceHandleBGM_);
+		voiceHandleBGM_ = audio_->PlayWave(titleBGM_, true);
 		sceneMode_ = 1;
 	}
 
@@ -468,6 +486,7 @@ void GameScene::collisionPlayerEnemy()
 			if (dx < 1 && dz < 1) {
 				enemyFrag_[i] = 0;
 				playerLife_ -= 1;
+				audio_->PlayWave(playerHitBGM_);
 			}
 		}
 	}
@@ -495,6 +514,7 @@ void GameScene::collisionBeamEnemy()
 						enemyFrag_[e] = false;
 						beamFrag_[i] = false;
 						gameScore_ += 10;
+						audio_->PlayWave(enemyHitBGM_);
 					}
 				}
 			}
@@ -510,8 +530,9 @@ void GameScene::gamePlayStart()
 	worldTransformPlayer_.translation_.x = 0;
 	for (int  i = 0; i < 10; i++) 
 	{
+	enemyFrag_[i] = 0;
 	worldTransformEnemy_[i].translation_.x = 0;
-	worldTransformEnemy_[i].translation_.z = 0;
+	worldTransformEnemy_[i].translation_.z = 40;
 	}
 	for (int i = 0; i < 10; i++) 
 	{

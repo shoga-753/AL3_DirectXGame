@@ -79,6 +79,14 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	//サウンド
+	uint32_t titleBGM_ = 0;
+	uint32_t gamePlayBGM_ = 0;
+	uint32_t gameoverBGM_ = 0;
+	uint32_t enemyHitBGM_ = 0;
+	uint32_t playerHitBGM_ = 0;
+	uint32_t voiceHandleBGM_ = 0;
 	//タイトル
 	uint32_t textureHandleTitle_ = 0;
 	Sprite* spriteTitle_ = nullptr;
@@ -130,5 +138,7 @@ private: // メンバ変数
 	int beamTimer_ = 0;
 
 	float enemySpeed_[10] = {0};
+
+
 
 };
