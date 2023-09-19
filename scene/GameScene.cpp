@@ -475,7 +475,7 @@ void GameScene::enemyMove()
 			worldTransformEnemy_[i].rotation_.z -= 0.1f;
 
 			worldTransformEnemy_[i].translation_.x += enemySpeed_[i];
-			worldTransformEnemy_[i].translation_.y += enemySpeed_[i];
+			
 
 			if (worldTransformEnemy_[i].translation_.x >= 4) {
 				enemySpeed_[i] = -0.1f;
