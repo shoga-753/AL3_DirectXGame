@@ -53,7 +53,6 @@ public: // メンバ関数
 
 		void GameOverUpdate();
 		void GameOverDraw2DNear();
-	private:
 		//自機更新
 	    void beamUpdate();
 	    void playerUpdate();
@@ -63,10 +62,15 @@ public: // メンバ関数
 	    void enemyUpdate();
 	    void enemyMove();
 	    void enemyBorn();
+	    void enemyJump();
 
 		void collision();
 	    void collisionPlayerEnemy();
 	    void collisionBeamEnemy();
+
+		void StageUpdate();
+
+		void DrawScore();
 
 		void gamePlayStart();
 	    
@@ -109,7 +113,7 @@ private: // メンバ変数
 	//
 	uint32_t textureHandleStage_ = 0;
 	Model* modelStage_ = nullptr;
-	WorldTransform worldTransformStage_;
+	WorldTransform worldTransformStage_[20];
 
 	// ビーム
 	uint32_t textureHandleBeam_ = 0;
@@ -125,7 +129,7 @@ private: // メンバ変数
 	uint32_t textureHandleEnemy_ = 0;
 	Model* modelEnemy_ = nullptr;
 	WorldTransform worldTransformEnemy_[10];
-	bool enemyFrag_[10] = {0};
+	int enemyFrag_[10] = {0};
 
 	DebugText* debugText_ = nullptr;
 	int gameScore_ = 0;
@@ -139,6 +143,17 @@ private: // メンバ変数
 
 	float enemySpeed_[10] = {0};
 
+	float enemyJumpSpeed_[10] = {};
 
+	uint32_t teextureHandleNumber_ = 0;
+	Sprite* spriteNumber_[5] = {};
+
+	uint32_t textureHandleScore_ = 0;
+	Sprite* spriteScore_ = nullptr;
+
+	uint32_t textureHandleLife_ = 0;
+	Sprite* spriteLife[3] = {};
+
+	int playerTimer_ = 0;
 
 };
