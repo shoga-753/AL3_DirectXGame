@@ -68,7 +68,7 @@ public: // メンバ関数
 	    void collisionPlayerEnemy();
 	    void collisionBeamEnemy();
 
-		void StageUpdate();
+		//void StageUpdate();
 
 		void DrawScore();
 
@@ -110,10 +110,10 @@ private: // メンバ変数
 	//ステージ
 	ViewProjection viewProjection_;
 
-	//
-	uint32_t textureHandleStage_ = 0;
-	Model* modelStage_ = nullptr;
-	WorldTransform worldTransformStage_[20];
+	////
+	//uint32_t textureHandleStage_ = 0;
+	//Model* modelStage_ = nullptr;
+	//WorldTransform worldTransformStage_[20];
 
 	// ビーム
 	uint32_t textureHandleBeam_ = 0;

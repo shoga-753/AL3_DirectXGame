@@ -18,14 +18,14 @@ GameScene::~GameScene()
 	//背景
 	delete spriteBG_;
 	//ステージ
-	delete modelStage_;
+	//delete modelStage_;
 	//自機
 	delete modelPlayer_;
 	//ビーム
 	delete modelBeam_;
 	//敵機
 	delete modelEnemy_;
-
+	//スコア
 	delete spriteScore_;
 
 }
@@ -66,12 +66,12 @@ void GameScene::Initialize() {
 	//ステージ
 	viewProjection_.Initialize();
 
-	textureHandleStage_ = TextureManager::Load("stage2.jpg");
+	/*textureHandleStage_ = TextureManager::Load("stage2.jpg");
 	modelStage_ = Model::Create();
 	for (int i = 0; i < 20; i++) 
 	{
 		worldTransformStage_[i].Initialize();
-	}
+	}*/
 	
 
 	//視点変更
@@ -80,7 +80,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	//ステージ位置変更
-	for (int i = 0; i < 20; i++)
+	/*for (int i = 0; i < 20; i++)
 	{
 		worldTransformStage_[i].translation_ = {0, -1.5f, 2.0f * i - 5};
 		worldTransformStage_[i].scale_ = {4.5f, 1, 1};
@@ -90,7 +90,7 @@ void GameScene::Initialize() {
 		    worldTransformStage_[i].translation_);
 
 		worldTransformStage_[i].TransferMatrix();
-	}
+	}*/
 	
 
 	//自機表示
@@ -260,7 +260,7 @@ void GameScene::GamePlayUpdate()
 	playerUpdate();
 	beamUpdate();
 	enemyUpdate();
-	StageUpdate();
+	//StageUpdate();
 	collision();
 	collisionPlayerEnemy();
 	collisionBeamEnemy();
@@ -268,11 +268,11 @@ void GameScene::GamePlayUpdate()
 
 void GameScene::GamePlayDraw3D() 
 {
-	// ステージ
-	for (int i = 0; i < 20; i++)
-	{
-		modelStage_->Draw(worldTransformStage_[i], viewProjection_, textureHandleStage_);
-	}
+	//// ステージ
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	modelStage_->Draw(worldTransformStage_[i], viewProjection_, textureHandleStage_);
+	//}
 	
 
 	// 自機表示
@@ -381,8 +381,18 @@ void GameScene::playerUpdate()
 	if (input_->PushKey(DIK_LEFT)) {
 		worldTransformPlayer_.translation_.x -= 0.1f;
 	}
+	//上移動
+	if (input_->PushKey(DIK_UP)) {
+		worldTransformPlayer_.translation_.y += 0.1f;
+	}
+	//下移動
+	if (input_->PushKey(DIK_DOWN)) {
+		worldTransformPlayer_.translation_.y -= 0.1f;
+	}
 	worldTransformPlayer_.translation_.x = max(worldTransformPlayer_.translation_.x, -4);
 	worldTransformPlayer_.translation_.x = min(worldTransformPlayer_.translation_.x, 4);
+	worldTransformPlayer_.translation_.y = max(worldTransformPlayer_.translation_.y, -2);
+	worldTransformPlayer_.translation_.y = min(worldTransformPlayer_.translation_.y, 4);
 
 
 	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(
@@ -403,7 +413,7 @@ void GameScene::beamMove()
 	for (int i = 0; i < 10; i++) 
 	{
 		if (beamFrag_[i] == true) {
-			worldTransformBeam_[i].rotation_.x += 0.3f;
+			worldTransformBeam_[i].rotation_.z -= 0.3f;
 
 			worldTransformBeam_[i].translation_.z += 0.5f;
 
@@ -422,6 +432,7 @@ void GameScene::beamBorn() {
 			if (input_->TriggerKey(DIK_SPACE) && beamFrag_[i] == false) {
 
 				worldTransformBeam_[i].translation_.x = worldTransformPlayer_.translation_.x;
+				worldTransformBeam_[i].translation_.y = worldTransformPlayer_.translation_.y;
 				worldTransformBeam_[i].translation_.z = worldTransformPlayer_.translation_.z;
 
 				beamFrag_[i] = true;
@@ -460,9 +471,11 @@ void GameScene::enemyMove()
 	{
 		if (enemyFrag_[i] == 1) {
 
-			worldTransformEnemy_[i].rotation_.x -= 0.1f;
+			worldTransformEnemy_[i].rotation_.x += 0.1f;
+			worldTransformEnemy_[i].rotation_.z -= 0.1f;
 
-			worldTransformEnemy_[i].translation_.x +=enemySpeed_[i] ;
+			worldTransformEnemy_[i].translation_.x += enemySpeed_[i];
+			worldTransformEnemy_[i].translation_.y += enemySpeed_[i];
 
 			if (worldTransformEnemy_[i].translation_.x >= 4) {
 				enemySpeed_[i] = -0.1f;
@@ -502,6 +515,7 @@ void GameScene::enemyBorn()
 				int x = rand() % 80;
 				float x2 = (float)x / 10 - 4;
 				worldTransformEnemy_[i].translation_.x = x2;
+				worldTransformEnemy_[i].translation_.y = x2;
 				break;
 			}
 		}
@@ -541,10 +555,13 @@ void GameScene::collisionPlayerEnemy()
 		if (enemyFrag_[i] == 1) {
 			float dx =
 			    abs(worldTransformPlayer_.translation_.x - worldTransformEnemy_[i].translation_.x);
+			float dy =
+			    abs(worldTransformPlayer_.translation_.y - worldTransformEnemy_[i].translation_.y);
 			float dz =
 			    abs(worldTransformPlayer_.translation_.z - worldTransformEnemy_[i].translation_.z);
 
-			if (dx < 1 && dz < 1) {
+			if (dx < 1 && dy < 1 && dz < 1)
+			{
 				enemyFrag_[i] = 0;
 				playerLife_ -= 1;
 				playerTimer_ = 60;
@@ -568,11 +585,14 @@ void GameScene::collisionBeamEnemy()
 					float dx =
 					    abs(worldTransformBeam_[i].translation_.x -
 					        worldTransformEnemy_[e].translation_.x);
+					float dy =
+					    abs(worldTransformBeam_[i].translation_.y -
+					        worldTransformEnemy_[e].translation_.y);
 					float dz =
 					    abs(worldTransformBeam_[i].translation_.z -
 					        worldTransformEnemy_[e].translation_.z);
 
-					if (dx < 1 && dz < 1) {
+					if (dx < 1 && dy < 1 && dz < 1) {
 						enemyFrag_[e] = 2;
 						beamFrag_[i] = false;
 						enemyJumpSpeed_[i] = 1;
@@ -587,22 +607,22 @@ void GameScene::collisionBeamEnemy()
 	}
 }
 
-void GameScene::StageUpdate() 
-{
-	for (int i = 0; i < 20; i++) 
-	{
-	worldTransformStage_[i].translation_.z -= 0.1f;
-	if (worldTransformStage_[i].translation_.z < -5)
-	{
-			worldTransformStage_[i].translation_.z += 40;
-	}
-	worldTransformStage_[i].matWorld_ = MakeAffineMatrix(
-		worldTransformStage_[i].scale_, worldTransformStage_[i].rotation_,
-		worldTransformStage_[i].translation_);
-
-	worldTransformStage_[i].TransferMatrix();
-	}
-}
+//void GameScene::StageUpdate() 
+//{
+//	for (int i = 0; i < 20; i++) 
+//	{
+//	worldTransformStage_[i].translation_.z -= 0.1f;
+//	if (worldTransformStage_[i].translation_.z < -5)
+//	{
+//			worldTransformStage_[i].translation_.z += 40;
+//	}
+//	worldTransformStage_[i].matWorld_ = MakeAffineMatrix(
+//		worldTransformStage_[i].scale_, worldTransformStage_[i].rotation_,
+//		worldTransformStage_[i].translation_);
+//
+//	worldTransformStage_[i].TransferMatrix();
+//	}
+//}
 
 void GameScene::DrawScore() 
 {
@@ -631,6 +651,7 @@ void GameScene::gamePlayStart()
 {
 	
 	worldTransformPlayer_.translation_.x = 0;
+	worldTransformPlayer_.translation_.y = 0;
 	for (int  i = 0; i < 10; i++) 
 	{
 	enemyFrag_[i] = 0;
@@ -639,6 +660,7 @@ void GameScene::gamePlayStart()
 	}
 	for (int i = 0; i < 10; i++) 
 	{
+	beamFrag_[i] = 0;
 	worldTransformBeam_[i].translation_.x = 0;
 	worldTransformBeam_[i].translation_.z = 0;
 	}
